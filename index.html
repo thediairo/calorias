@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Calorías</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <style>
+        #bara {
+            background-color: cyan;
+        }
+        #agre {
+            background-color: cadetblue;
+            width: 500px;
+            height: 600px;
+            position: absolute;
+            top: 60px;
+            left: 80px;
+            border-radius: 50px;
+        }
+        #tex1 {
+            position: absolute;
+            left: 190px;
+        }
+        #re {
+            background-color: cornflowerblue;
+            width: 1000px;
+            height: 50px;
+            position: absolute;
+            top: 60px;
+            left: 600px;
+            border-radius: 50px;
+        }
+        #re2 {
+            background-color: deepskyblue;
+            width: 1000px;
+            height: 400px;
+            position: absolute;
+            top: 120px;
+            left: 600px;
+            border-radius: 50px;
+        }
+        #re3 {
+            background-color: rgb(86, 164, 190);
+            width: 1000px;
+            height: 400px;
+            position: absolute;
+            top: 525px;
+            left: 600px;
+            border-radius: 50px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        .btn {
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <div id="bara">
+            <h1>Control de Calorías</h1>
+        </div>
+    </center>
+    <div id="agre">
+        <h2 id="tex1">Agrega</h2>
+        <h3 style="position: absolute; left: 20px; top: 50px;">Categoría</h3>
+        <select id="actividad" style="position: absolute; left: 20px; top: 100px; width: 140px; border-radius: 10px;">
+            <option value="comida">Comer</option>
+            <option value="ejercicio">Ejercicio</option>
+        </select>
+        <h3 style="position: absolute; left: 20px; top: 140px;">Actividad</h3>
+        <input type="text" style="width: 400px; position: absolute; left: 20px; top: 180px; border-radius: 20px;" id="des">
+        <h3 style="position: absolute; left: 20px; top: 220px;">Calorías</h3>
+        <input type="number" min="0" max="100000" style="position: absolute; left: 20px; top: 260px; border-radius: 20px;" id="calo">
+        <button class="btn btn-primary" style="position: absolute; left: 20px; top: 500px;" id="aceptar">Aceptar</button>
+        <button class="btn btn-danger" style="position: absolute; left: 120px; top: 500px;" id="reset">Reset</button>
+    </div>
+    <div id="re">
+        <center>
+            <h2>Resumen de Calorías</h2>
+        </center>
+    </div>
+    <div id="re2">
+        <h3 style="font-size: 70px; position: absolute; left: 50px; top: 100px;" id="consumidas">0</h3>
+        <h3 style="font-size: 70px; position: absolute; left: 400px; top: 100px;" id="ejer">0</h3>
+        <h3 style="font-size: 70px; position: absolute; left: 800px; top: 100px;" id="diferencia">0</h3>
+        <h3 style="font-size: 40px; position: absolute; left: 720px; top: 200px;">Diferencia</h3>
+        <h3 style="font-size: 40px; position: absolute; left: 350px; top: 200px;">Ejercicio</h3>
+        <h3 style="font-size: 40px; position: absolute; left: 10px; top: 200px;">Consumidas</h3>
+    </div>
+    <div id="re3">
+        <table id="tabla">
+            <thead>
+                <tr>
+                    <th>Categoría</th>
+                    <th>Actividad</th>
+                    <th>Calorías</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Las filas se añadirán aquí con JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    
+    <div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="editarModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarModalLabel">Editar Actividad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h3>Categoría</h3>
+                    <select id="editarCategoria" class="form-select">
+                        <option value="comida">Comer</option>
+                        <option value="ejercicio">Ejercicio</option>
+                    </select>
+                    <h3>Actividad</h3>
+                    <input type="text" id="editarDescripcion" class="form-control">
+                    <h3>Calorías</h3>
+                    <input type="number" min="0" max="100000" id="editarCalorias" class="form-control">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="guardarCambios">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script>
+        let co = parseInt(localStorage.getItem("comida")) || 0;
+        let eje = parseInt(localStorage.getItem("ejer")) || 0;
+
+        function actualizarResumen() {
+            let di = eje - co;
+            document.getElementById("diferencia").textContent = di;
+            document.getElementById("consumidas").textContent = co;
+            document.getElementById("ejer").textContent = eje;
+        }
+
+        document.getElementById("aceptar").onclick = () => {
+            const op = document.getElementById("actividad").value;
+            const desc = document.getElementById("des").value;
+            const calorias = parseInt(document.getElementById("calo").value);
+            const tabla = document.getElementById("tabla").getElementsByTagName('tbody')[0];
+
+            // Agregar fila a la tabla
+            const newRow = tabla.insertRow();
+            newRow.setAttribute('data-calorias', calorias); // Añadir atributo para referencia
+            newRow.setAttribute('data-tipo', op); // Añadir atributo para referencia
+
+            newRow.insertCell(0).textContent = op.charAt(0).toUpperCase() + op.slice(1); // Capitaliza la primera letra
+            newRow.insertCell(1).textContent = desc;
+            newRow.insertCell(2).textContent = calorias;
+            const cell4 = newRow.insertCell(3);
+            cell4.innerHTML = `
+                <button class="btn btn-warning btn-sm">Editar</button>
+                <button class="btn btn-danger btn-sm">Eliminar</button>
+            `;
+
+            // Actualizar totales y diferencia
+            if (op === "comida") {
+                co += calorias;
+                localStorage.setItem("comida", co);
+            } else {
+                eje += calorias;
+                localStorage.setItem("ejer", eje);
+            }
+
+            actualizarResumen();
+        };
+
+        // Delegar el evento click en la tabla para manejar la eliminación y edición de filas
+        document.getElementById("tabla").addEventListener("click", (event) => {
+            if (event.target.classList.contains("btn-danger")) {
+                Swal.fire({
+        title: "Seguro?? ",
+        showDenyButton: true,
+        confirmButtonText: "Obvio papito",
+        confirmButtonColor: '#20c997',
+        denyButtonText: "Ya mejor nadota "
+    
+    }).then ( async (result) => {
+        if (result.isConfirmed) {
+            const row = event.target.closest("tr");
+                const calorias = parseInt(row.getAttribute('data-calorias'));
+                const tipo = row.getAttribute('data-tipo');
+
+                // Actualizar totales y diferencia
+                if (tipo === "comida") {
+                    co -= calorias;
+                    localStorage.setItem("comida", co);
+                } else {
+                    eje -= calorias;
+                    localStorage.setItem("ejer", eje);
+                }
+
+                row.remove();
+                actualizarResumen();
+        }
+    });
+            } else if (event.target.classList.contains("btn-warning")) {
+                const row = event.target.closest("tr");
+                const tipo = row.getAttribute('data-tipo');
+                const descripcion = row.cells[1].textContent;
+                const calorias = parseInt(row.cells[2].textContent);
+
+                document.getElementById("editarCategoria").value = tipo;
+                document.getElementById("editarDescripcion").value = descripcion;
+                document.getElementById("editarCalorias").value = calorias;
+
+                // Guardar la fila editada en una variable global
+                window.filaEditar = row;
+
+                const modal = new bootstrap.Modal(document.getElementById('editarModal'));
+                modal.show();
+            }
+        });
+
+        document.getElementById("guardarCambios").onclick = () => {
+            const nuevaCategoria = document.getElementById("editarCategoria").value;
+            const nuevaDescripcion = document.getElementById("editarDescripcion").value;
+            const nuevasCalorias = parseInt(document.getElementById("editarCalorias").value);
+
+            const fila = window.filaEditar;
+            const categoriaAnterior = fila.getAttribute('data-tipo');
+            const caloriasAnterior = parseInt(fila.getAttribute('data-calorias'));
+
+            // Actualizar datos en la fila
+            fila.cells[0].textContent = nuevaCategoria.charAt(0).toUpperCase() + nuevaCategoria.slice(1);
+            fila.cells[1].textContent = nuevaDescripcion;
+            fila.cells[2].textContent = nuevasCalorias;
+
+            // Actualizar atributos de la fila
+            fila.setAttribute('data-tipo', nuevaCategoria);
+            fila.setAttribute('data-calorias', nuevasCalorias);
+
+            // Ajustar totales y diferencia
+            if (categoriaAnterior === "comida") {
+                co -= caloriasAnterior;
+            } else {
+                eje -= caloriasAnterior;
+            }
+
+            if (nuevaCategoria === "comida") {
+                co += nuevasCalorias;
+            } else {
+                eje += nuevasCalorias;
+            }
+
+            localStorage.setItem("comida", co);
+            localStorage.setItem("ejer", eje);
+
+            actualizarResumen();
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editarModal'));
+            modal.hide();
+        };
+
+        // Inicializar resumen al cargar la página
+        actualizarResumen();
+        document.getElementById("reset").onclick=()=>{
+          
+          Swal.fire({
+        title: "Seguro?? ",
+        showDenyButton: true,
+        confirmButtonText: "Tanto como que televisa le regalo 3 o mas campeonatos al america",
+        confirmButtonColor: '#20c997',
+        denyButtonText: "Tienes razon mejor no, pero a otra opción tiene razon"
+    
+    }).then ( async (result) => {
+        if (result.isConfirmed) {
+          localStorage.clear();
+          location.reload();
+        }
+    });
+         
+        }
+    </script>
+    <script src="sweetalert2.all.min.js"></script>
+</body>
+</html>
